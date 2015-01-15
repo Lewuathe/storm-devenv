@@ -51,3 +51,8 @@ You can see your cluster UI on [http://192.168.50.4:8080](http://192.168.50.4:80
 # License
 
 MIT License. Please see the LICENSE file in details.
+
+# Future works
+
+* Make it easy to change storm version
+* Separate storm cookbook as a distinct chef cookbook.
