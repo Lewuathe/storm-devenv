@@ -41,7 +41,7 @@ Vagrant.configure(2) do |config|
     nimbus.vm.hostname = "nimbus"
     nimbus.vm.provision :chef_solo do |chef|
       chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
-      chef.add_recipe "storm::nimbus"
+      chef.add_recipe "storm-cluster::nimbus"
       chef.json = {
         "storm" => {
           :nimbus_ip => NIMBUS_IP,
@@ -58,7 +58,7 @@ Vagrant.configure(2) do |config|
       supervisor.vm.hostname = "supervisor#{i}"
       supervisor.vm.provision :chef_solo do |chef|
         chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
-        chef.add_recipe "storm::supervisor"
+        chef.add_recipe "storm-cluster::supervisor"
         chef.json = {
           "storm" => {
             :nimbus_ip => NIMBUS_IP,
