@@ -9,6 +9,7 @@
 ZOOKEEPER_IP = "192.168.50.3"
 NIMBUS_IP = "192.168.50.4"
 SUPERVISOR_IPs = ["192.168.50.5", "192.168.50.6", "192.168.50.7"]
+DRPC_IP = "192.168.50.8"
 
 Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.
@@ -34,7 +35,6 @@ Vagrant.configure(2) do |config|
     end
   end
 
-  
   config.vm.define "nimbus" do |nimbus|
     nimbus.vm.box = "precise32"
     nimbus.vm.network "private_network", ip: NIMBUS_IP
@@ -45,7 +45,8 @@ Vagrant.configure(2) do |config|
       chef.json = {
         "storm" => {
           :nimbus_ip => NIMBUS_IP,
-          :zookeeper_ip => ZOOKEEPER_IP
+          :zookeeper_ip => ZOOKEEPER_IP,
+          :drpc_ip => DRPC_IP
         }
       }
     end
@@ -62,12 +63,31 @@ Vagrant.configure(2) do |config|
         chef.json = {
           "storm" => {
             :nimbus_ip => NIMBUS_IP,
-            :zookeeper_ip => ZOOKEEPER_IP
+            :zookeeper_ip => ZOOKEEPER_IP,
+            :drpc_ip => DRPC_IP
           }
         }
       end
     end
   end
+
+  config.vm.define "drpc" do |drpc|
+    drpc.vm.box = "precise32"
+    drpc.vm.network "private_network", ip: DRPC_IP
+    drpc.vm.hostname = "drpc"
+    drpc.vm.provision :chef_solo do |chef|
+      chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
+      chef.add_recipe "storm-cluster::drpc"
+      chef.json = {
+        "storm" => {
+          :nimbus_ip => NIMBUS_IP,
+          :zookeeper_ip => ZOOKEEPER_IP,
+          :drpc_ip => DRPC_IP
+        }
+      }
+    end
+  end
+  
 
   # Create a forwarded port mapping which allows access to a specific port
   # within the machine from a port on the host machine. In the example below,
