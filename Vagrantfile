@@ -6,10 +6,20 @@
 # backwards compatibility). Please don't change it unless you know what
 # you're doing.
 
-ZOOKEEPER_IP = "192.168.50.3"
-NIMBUS_IP = "192.168.50.4"
-SUPERVISOR_IPs = ["192.168.50.5", "192.168.50.6", "192.168.50.7"]
-DRPC_IP = "192.168.50.8"
+#-- VPC IP Address --#
+ZOOKEEPER_IP = "172.30.0.10"
+NIMBUS_IP = "172.30.0.11"
+SUPERVISOR_IPs = ["172.30.0.12", "172.30.0.13", "172.30.0.14"]
+DRPC_IP = "172.30.0.15"
+
+#-- AWS EC2 configuration --#
+AMI_ID = ENV['AMI_ID']
+AWS_REGION = ENV['AWS_REGION']
+AWS_INSTANCE_TYPE = ENV['AWS_INSTANCE_TYPE']
+AWS_VPC_SUBNET_ID = ENV['AWS_VPC_SUBNET_ID']
+AWS_KEYPAIR_NAME = ENV['AWS_KEYPAIR_NAME']
+## This security group have to be accessible from my machine
+AWS_SECURITY_GROUPS = [ENV['AWS_SECURITY_GROUP']]
 
 Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.
@@ -25,22 +35,63 @@ Vagrant.configure(2) do |config|
   config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
   config.vm.define "zookeeper" do |zookeeper|
-    zookeeper.vm.box = "precise32"
+    zookeeper.vm.box = "dummy"
     zookeeper.vm.network "private_network", ip: ZOOKEEPER_IP
-    #zookeeper.vm.network "forwarded_port", guest: 2181, host: 12181
+    zookeeper.vm.provider :aws do |aws, override| 
+      #-- User settings --#
+      aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+      aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+      aws.ami = AMI_ID
+      aws.tags = {
+        'Name' => 'ZooKeeper'
+      }
+      aws.keypair_name = AWS_KEYPAIR_NAME
+
+      #-- Instance settings --#
+      aws.private_ip_address = ZOOKEEPER_IP
+      aws.region = AWS_REGION
+      aws.subnet_id = AWS_VPC_SUBNET_ID
+      aws.instance_type = AWS_INSTANCE_TYPE
+      #aws.elastic_ip = true
+      aws.security_groups = AWS_SECURITY_GROUPS
+
+      override.ssh.username = "ubuntu"
+      override.ssh.private_key_path = ENV["AWS_PRIVATE_KEYPATH"]
+    end
     zookeeper.vm.hostname = "zookeeper"
     zookeeper.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
+      chef.cookbooks_path = ["./site-cookbooks", "./cookbooks"]
       chef.add_recipe "base"
     end
   end
 
   config.vm.define "nimbus" do |nimbus|
-    nimbus.vm.box = "precise32"
+    nimbus.vm.box = "dummy"
     nimbus.vm.network "private_network", ip: NIMBUS_IP
     nimbus.vm.hostname = "nimbus"
+    nimbus.vm.provider :aws do |aws, override|
+      #-- User settings --#
+      aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+      aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+      aws.ami = AMI_ID
+      aws.tags = {
+        'Name' => 'Nimbus'
+      }
+      aws.keypair_name = AWS_KEYPAIR_NAME
+      
+      #-- Instance settings --#
+      aws.private_ip_address = NIMBUS_IP
+      aws.region = AWS_REGION
+      aws.subnet_id = AWS_VPC_SUBNET_ID
+      aws.instance_type = AWS_INSTANCE_TYPE
+      #aws.elastic_ip = true
+      aws.security_groups = AWS_SECURITY_GROUPS
+
+      override.ssh.username = "ubuntu"
+      override.ssh.private_key_path = ENV["AWS_PRIVATE_KEYPATH"]
+    end
     nimbus.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
+      chef.cookbooks_path = ["./site-cookbooks", "./cookbooks"]
       chef.add_recipe "storm-cluster::nimbus"
       chef.json = {
         "storm" => {
@@ -54,11 +105,31 @@ Vagrant.configure(2) do |config|
 
   (1..3).each do |i|
     config.vm.define "supervisor#{i}" do |supervisor|
-      supervisor.vm.box = "precise32"
+      supervisor.vm.box = "dummy"
       supervisor.vm.network "private_network", ip: SUPERVISOR_IPs[i-1]
       supervisor.vm.hostname = "supervisor#{i}"
+      supervisor.vm.provider :aws do |aws, override|
+        aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+        aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+        aws.ami = AMI_ID
+        aws.tags = {
+          'Name' => "Supervisor#{i}"
+        }
+        aws.keypair_name = AWS_KEYPAIR_NAME
+
+        #-- Instance settings --#
+        aws.private_ip_address = SUPERVISOR_IPs[i-1]
+        aws.region = AWS_REGION
+        aws.subnet_id = AWS_VPC_SUBNET_ID
+        #aws.instance_type = AWS_INSTANCE_TYPE
+        aws.elastic_ip = true
+        aws.security_groups = AWS_SECURITY_GROUPS
+
+        override.ssh.username = "ubuntu"
+        override.ssh.private_key_path = ENV["AWS_PRIVATE_KEYPATH"]
+      end
       supervisor.vm.provision :chef_solo do |chef|
-        chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
+        chef.cookbooks_path = ["./site-cookbooks", "./cookbooks"]
         chef.add_recipe "storm-cluster::supervisor"
         chef.json = {
           "storm" => {
@@ -72,11 +143,31 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "drpc" do |drpc|
-    drpc.vm.box = "precise32"
+    drpc.vm.box = "dummy"
     drpc.vm.network "private_network", ip: DRPC_IP
     drpc.vm.hostname = "drpc"
+    drpc.vm.provider :aws do |aws, override|
+      aws.access_key_id = ENV["AWS_ACCESS_KEY_ID"]
+      aws.secret_access_key = ENV["AWS_SECRET_ACCESS_KEY"]
+      aws.ami = AMI_ID
+      aws.tags = {
+        'Name' => 'DRPC'
+      }
+      aws.keypair_name = AWS_KEYPAIR_NAME
+
+      #-- Instance settings --#
+      aws.private_ip_address = DRPC_IP
+      aws.region = AWS_REGION
+      aws.subnet_id = AWS_VPC_SUBNET_ID
+      aws.instance_type = AWS_INSTANCE_TYPE
+      #aws.elastic_ip = true
+      aws.security_groups = AWS_SECURITY_GROUPS
+ 
+      override.ssh.username = "ubuntu"
+      override.ssh.private_key_path = ENV["AWS_PRIVATE_KEYPATH"]
+    end
     drpc.vm.provision :chef_solo do |chef|
-      chef.cookbooks_path = ["site-cookbooks", "cookbooks"]
+      chef.cookbooks_path = ["./site-cookbooks", "./cookbooks"]
       chef.add_recipe "storm-cluster::drpc"
       chef.json = {
         "storm" => {
@@ -87,55 +178,4 @@ Vagrant.configure(2) do |config|
       }
     end
   end
-  
-
-  # Create a forwarded port mapping which allows access to a specific port
-  # within the machine from a port on the host machine. In the example below,
-  # accessing "localhost:8080" will access port 80 on the guest machine.
-  # config.vm.network "forwarded_port", guest: 80, host: 8080
-
-  # Create a private network, which allows host-only access to the machine
-  # using a specific IP.
-  # config.vm.network "private_network", ip: "192.168.33.10"
-
-  # Create a public network, which generally matched to bridged network.
-  # Bridged networks make the machine appear as another physical device on
-  # your network.
-  # config.vm.network "public_network"
-
-  # Share an additional folder to the guest VM. The first argument is
-  # the path on the host to the actual folder. The second argument is
-  # the path on the guest to mount the folder. And the optional third
-  # argument is a set of non-required options.
-  # config.vm.synced_folder "../data", "/vagrant_data"
-
-  # Provider-specific configuration so you can fine-tune various
-  # backing providers for Vagrant. These expose provider-specific options.
-  # Example for VirtualBox:
-  #
-  # config.vm.provider "virtualbox" do |vb|
-  #   # Display the VirtualBox GUI when booting the machine
-  #   vb.gui = true
-  #
-  #   # Customize the amount of memory on the VM:
-  #   vb.memory = "1024"
-  # end
-  #
-  # View the documentation for the provider you are using for more
-  # information on available options.
-
-  # Define a Vagrant Push strategy for pushing to Atlas. Other push strategies
-  # such as FTP and Heroku are also available. See the documentation at
-  # https://docs.vagrantup.com/v2/push/atlas.html for more information.
-  # config.push.define "atlas" do |push|
-  #   push.app = "YOUR_ATLAS_USERNAME/YOUR_APPLICATION_NAME"
-  # end
-
-  # Enable provisioning with a shell script. Additional provisioners such as
-  # Puppet, Chef, Ansible, Salt, and Docker are also available. Please see the
-  # documentation for more information about their specific syntax and use.
-  # config.vm.provision "shell", inline: <<-SHELL
-  #   sudo apt-get update
-  #   sudo apt-get install -y apache2
-  # SHELL
 end
