@@ -121,8 +121,8 @@ Vagrant.configure(2) do |config|
         aws.private_ip_address = SUPERVISOR_IPs[i-1]
         aws.region = AWS_REGION
         aws.subnet_id = AWS_VPC_SUBNET_ID
-        #aws.instance_type = AWS_INSTANCE_TYPE
-        aws.elastic_ip = true
+        aws.instance_type = AWS_INSTANCE_TYPE
+        #aws.elastic_ip = true
         aws.security_groups = AWS_SECURITY_GROUPS
 
         override.ssh.username = "ubuntu"
