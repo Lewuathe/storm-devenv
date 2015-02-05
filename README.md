@@ -34,7 +34,7 @@ $ cd storm-devenv
 ## With VirtualBox provider
 
 ```
-$ export VAGRANT_CWD=./provider/virtualbox && vagrant up
+$ export VAGRANT_CWD=./providers/virtualbox && vagrant up
 ```
 
 ## With AWS provider
@@ -54,7 +54,7 @@ You have to setup below configurations in environment variables first.
 
                                                   
 ```
-$ export VAGRANT_CWD=./provider/aws && vagrant up
+$ export VAGRANT_CWD=./providers/aws && vagrant up
 ```
 
 # Submit Topology
