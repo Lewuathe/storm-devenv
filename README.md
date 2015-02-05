@@ -50,7 +50,7 @@ You have to setup below configurations in environment variables first.
 |AWS_SECURITY_GROUPS|sg-1234abcd|Available security group|
 |AWS_ACCESS_KEY_ID|abcdefg1234567|You AWS access key ID|
 |AWS_SECRET_ACCESS_KEY|ABCDEFG1234567|Your AWS secret access key|
-|AWS_PRIVATE_KEYPATH|/Users/youanem/.ssh/key.pem|The full path of your AWS key pair|
+|AWS_PRIVATE_KEYPATH|/Users/yourname/.ssh/key.pem|The full path of your AWS key pair|
 
                                                   
 ```
