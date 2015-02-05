@@ -65,6 +65,8 @@ Write your own storm.yaml file `~/.storm/storm.yaml`
 nimbus.host: "172.30.0.11"
 ```
 
+If you have launched on EC2, you have to setup this as EC2 nimbus public IP which can be found your AWS dashboard.
+
 And submit your topology. You can read more detail [here](https://storm.apache.org/documentation/Running-topologies-on-a-production-cluster.html)
 ```
 $ storm jar path/to/allmycode.jar org.me.MyTopology arg1 arg2 arg3
@@ -72,7 +74,8 @@ $ storm jar path/to/allmycode.jar org.me.MyTopology arg1 arg2 arg3
 
 # Check UI
 
-You can see your cluster UI on [http://192.168.50.4:8080](http://192.168.50.4:8080/index.html)
+You can see your cluster UI on [http://172.30.0.11:8080](http://172.30.0.11:8080/index.html)
+
 
 # License
 
