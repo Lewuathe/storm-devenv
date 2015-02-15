@@ -23,10 +23,10 @@ Vagrant.configure(2) do |config|
 
   # The url from where the 'config.vm.box' box will be fetched if it
   # doesn't already exist on the user's system.
-  config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+  config.vm.box_url = "http://files.vagrantup.com/precise64.box"
 
   config.vm.define "zookeeper" do |zookeeper|
-    zookeeper.vm.box = 'precise32'
+    zookeeper.vm.box = 'precise64'
     zookeeper.vm.network "private_network", ip: ZOOKEEPER_IP
     zookeeper.vm.hostname = "zookeeper"
     zookeeper.vm.provision :chef_solo do |chef|
@@ -36,7 +36,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "nimbus" do |nimbus|
-    nimbus.vm.box = 'precise32'
+    nimbus.vm.box = 'precise64'
     nimbus.vm.network "private_network", ip: NIMBUS_IP
     nimbus.vm.hostname = "nimbus"
     nimbus.vm.provision :chef_solo do |chef|
@@ -54,7 +54,7 @@ Vagrant.configure(2) do |config|
 
   (1..3).each do |i|
     config.vm.define "supervisor#{i}" do |supervisor|
-      supervisor.vm.box = 'precise32'
+      supervisor.vm.box = 'precise64'
       supervisor.vm.network "private_network", ip: SUPERVISOR_IPs[i-1]
       supervisor.vm.hostname = "supervisor#{i}"
       supervisor.vm.provision :chef_solo do |chef|
@@ -72,7 +72,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "drpc" do |drpc|
-    drpc.vm.box = 'precise32'
+    drpc.vm.box = 'precise64'
     drpc.vm.network "private_network", ip: DRPC_IP
     drpc.vm.hostname = "drpc"
     drpc.vm.provision :chef_solo do |chef|
