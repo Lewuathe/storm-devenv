@@ -46,10 +46,12 @@ Vagrant.configure(2) do |config|
       chef.add_recipe "storm-cluster::nimbus"
       chef.json = {
         "storm" => {
-          :nimbus_ip => NIMBUS_IP,
-          :zookeeper_ip => ZOOKEEPER_IP,
-          :drpc_ip => DRPC_IP,
-          :version => STORM_VERSION
+          "storm_yaml" => {
+            "nimbus.host" => NIMBUS_IP,
+            "storm.zookeeper.servers" => [ZOOKEEPER_IP],
+            "drpc.servers" => [DRPC_IP]
+          },
+          "version" => STORM_VERSION
         }
       }
     end
@@ -65,10 +67,12 @@ Vagrant.configure(2) do |config|
         chef.add_recipe "storm-cluster::supervisor"
         chef.json = {
           "storm" => {
-            :nimbus_ip => NIMBUS_IP,
-            :zookeeper_ip => ZOOKEEPER_IP,
-            :drpc_ip => DRPC_IP,
-            :version => STORM_VERSION
+            "storm_yaml" => {
+              "nimbus.host" => NIMBUS_IP,
+              "storm.zookeeper.servers" => [ZOOKEEPER_IP],
+              "drpc.servers" => [DRPC_IP]
+            },
+            "version" => STORM_VERSION
           }
         }
       end
@@ -84,10 +88,12 @@ Vagrant.configure(2) do |config|
       chef.add_recipe "storm-cluster::drpc"
       chef.json = {
         "storm" => {
-          :nimbus_ip => NIMBUS_IP,
-          :zookeeper_ip => ZOOKEEPER_IP,
-          :drpc_ip => DRPC_IP,
-          :version => STORM_VERSION
+          "storm_yaml" => {
+            "nimbus.host" => NIMBUS_IP,
+              "storm.zookeeper.servers" => [ZOOKEEPER_IP],
+            "drpc.servers" => [DRPC_IP]
+          },
+          "version" => STORM_VERSION
         }
       }
     end
