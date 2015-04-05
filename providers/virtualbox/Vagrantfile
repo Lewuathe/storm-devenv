@@ -12,7 +12,7 @@ NIMBUS_IP = "172.30.0.11"
 SUPERVISOR_IPs = ["172.30.0.12", "172.30.0.13", "172.30.0.14"]
 DRPC_IP = "172.30.0.15"
 
-STORM_VERSION = "0.10.0-SNAPSHOT"
+STORM_VERSION = "0.11.0-SNAPSHOT"
 
 Vagrant.configure(2) do |config|
   # The most common configuration options are documented and commented below.
